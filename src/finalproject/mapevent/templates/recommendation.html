@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+  <meta name="description" content="">
+  <title>Look Around - What's Going On</title>
+  <link rel="stylesheet" href="{% static 'assets/web/assets/mobirise-icons/mobirise-icons.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css'%}">
+  <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap-grid.min.css'%}">
+  <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap-reboot.min.css'%}">
+  <link rel="stylesheet" href="{% static 'assets/theme/css/style.css'%}">
+  <link rel="stylesheet" href="{% static 'assets/mobirise/css/mbr-additional.css'%}" type="text/css">
+  <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+  
+</head>
+<body>
+  <section class="cid-qCAhz4dD25">
+    <div class="container">
+      <div class="media-container-row content mbr-white">
+        <div class="col-12 col-md-4 mbr-text mbr-fonts-style">
+          <strong>What might interest you...</strong>
+          <a style="float:right;" href={% url 'home' %}>Back</a>
+          {% if not events %}
+          <blockquote>
+            <i class="mbri-sad-face"></i><strong>&nbsp;&nbsp;Events are so few that it's hard to find something for you. Try again later.</strong> 
+          </blockquote>
+          {% endif %}
+          {% for event, liked in events%}
+          <blockquote onmouseover="showOnMap(this)" loc="{{event.location}}" style="cursor:default;">
+            <strong class="display-5">{{event.brief}}</strong>
+            {% if liked == 0 %} 
+            <i title="Add to Favorites" class="mbri-star" style="cursor:pointer;" onclick="likeEvent(this)" event_id="{{event.id}}"></i>
+            {% else %}
+            <i title="Remove from Favorites" class="mbri-magic-stick" style="cursor:pointer;" onclick="stopLikeEvent(this)" event_id="{{event.id}}"></i>
+            {% endif %}
+            <br><u>{{event.address}}</u>
+            <div style="font-size:0.85rem;">
+              <i class="mbri-clock" title="Time"></i>&nbsp;&nbsp;{{event.start_time}}-{{event.end_time}}<br>
+              <i class="mbri-smile-face" title="Host"></i>&nbsp;&nbsp;{{event.user}}<br>
+              <i class="mbri-bulleted-list" title="Detail"></i>&nbsp;&nbsp;{{event.detail}}
+            </div>
+          </blockquote>
+          {% endfor %}
+        </div>
+        <div class="col-12 col-md-8">
+          <div style="position:fixed;">
+            <div id="map" style="width:700px;height:600px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script>
+      var map;
+      var last_marker = null;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: -34.397, lng: 150.644},
+          zoom: 15
+        });
+      }
+      function showOnMap(e) {
+        var location = e.getAttribute("loc");
+        var start_index = location.indexOf("(") + 1;
+        var split_index = location.lastIndexOf(" ");
+        var end_index = location.lastIndexOf(")");
+        var lng_value = parseFloat(location.substring(start_index, split_index));
+        var lat_value = parseFloat(location.substring(split_index + 1, end_index));
+        var latlng = new google.maps.LatLng(lat_value, lng_value);
+        map.setCenter(latlng);
+        var marker = new google.maps.Marker({
+          position: latlng,
+          map: map,
+        });
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+        if (last_marker != null) {
+          last_marker.setMap(null);
+        }
+        last_marker = marker;
+      }
+      function likeEvent(e) {
+        var id = e.getAttribute("event_id");
+        $.get("/like/" + id).done(function(data){
+          e.setAttribute("class", "mbri-magic-stick");
+          e.setAttribute("onclick", "stopLikeEvent(this)");
+          e.setAttribute("title", "Remove from Favorites");
+          alert("Added to Favorites!");
+        });
+      }
+      function stopLikeEvent(e) {
+        var id = e.getAttribute("event_id");
+        $.get("/stop_like/" + id).done(function(data){
+          e.setAttribute("class", "mbri-star");
+          e.setAttribute("onclick", "likeEvent(this)");
+          e.setAttribute("title", "Add to Favorites");
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBkvtWCiJnuHJsT40--SVzcz6qFj_QOspc&callback=initMap"
+    async defer></script>
+  <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'assets/theme/js/script.js' %}"></script>
+</body>
+</html>

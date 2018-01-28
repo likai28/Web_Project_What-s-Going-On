@@ -1,0 +1,331 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Font Awesome -->
+    <title>Home - What's Going On</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/map.css">
+    <link rel="stylesheet" href="../static/css/modal.css">
+    <link rel="stylesheet" href="../static/css/sideNav.css">
+    <link rel="stylesheet" href="../static/css/sideModal.css">
+    <link rel="stylesheet" href="../static/css/floatingButton.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://jonthornton.github.io/jquery-timepicker/jquery.timepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://jonthornton.github.io/jquery-timepicker/jquery.timepicker.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.standalone.css" />
+    <script src="{% static 'js/datepair.js'%}"></script>
+    <script src="{% static 'js/jquery.datepair.js'%}"></script>
+    <!-- Scrollbar Custom CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
+</head>
+
+<body>
+    <!-- Modal -->
+    <div class="modal left" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="my-modal-content">
+            </div>
+            <!-- modal-content -->
+        </div>
+        <!-- modal-dialog -->
+    </div>
+    <!-- modal -->
+    <!-- Modal -->
+    <div id="eventModal">
+        <div id="closeModal">
+            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+        </div>
+        <div class="sidebar-header">
+            <h3>Events</h3>
+        </div>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li id="nearYouButton" class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#nearYou" role="tab">Near you</a>
+            </li>
+            <li id="favoritesButton" class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#favorites" role="tab">Favorites</a>
+            </li>
+            <li id="createdButton" class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#created" role="tab">Created</a>
+            </li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div class="tab-pane active" id="nearYou" role="tabpanel">
+                <div id="nearEvents" class="list-group">
+                </div>
+            </div>
+            <div class="tab-pane" id="favorites" role="tabpanel">
+                <div id="favoriteEvents" class="list-group"></div>
+            </div>
+            <div class="tab-pane" id="created" role="tabpanel">
+                <div id="createdEvents" class="list-group"></div>
+            </div>
+        </div>
+    </div>
+    <nav id="sidebar">
+        <div id="dismiss">
+            <i class="fa fa-arrow-left bigger" aria-hidden="true"></i>
+        </div>
+        <div class="sidebar-header">
+            <h3>What's Going On</h3>
+        </div>
+        <ul class="list-unstyled components">
+            <li class="active">
+                <a href="#">Home</a>
+            </li>
+            <li>
+                <div id="eventsButton"> <a href="#">Events</a></div>
+                <li class="list-unstyled">
+                    <a href="{% url 'timeline' %}">Timeline</a>
+                </li>
+                <li class="list-unstyled">
+                    <a href="#pageSubmenu" data-toggle="collapse">User center</a>
+                    <ul class="collapse list-unstyled" id="pageSubmenu">
+                        <li><a class="nav-link" data-toggle="modal" data-target="#editInterest">Edit Interest</a>
+                        </li>
+                    </ul>
+                </li>
+            </li>
+        </ul>
+        <ul class="list-unstyled CTAs">
+            <li><a href="{% url 'recommend' %}" class="article">Get Lucky</a></li>
+            <li><a href="{% url 'logout' %}" class="download">Log Out</a></li>
+        </ul>
+    </nav>
+    <div class="modal" id="editInterest" tabindex="-1" role="dialog" aria-labelledby="intestLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editInterestLabel">Choose Your Interests</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group align-left mbr-white">
+                            Pick at least one:
+                            <br>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="tags" value="Study">Study</label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="tags" value="Sports">Sports</label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="tags" value="Dating">Dating</label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="tags" value="Entertainment">Entertain</label>
+                        </div>
+                        {% csrf_token %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="interest_button" type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="searchContainer" class="row">
+        <div class="input-group input-group-lg col-lg-8">
+            <span class="input-group-button">
+            <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+                <i class="fa fa-bars fa-2x" aria-hidden="true"></i>
+            </button>
+          </span>
+            <div class="input-group input-group-lg">
+                <input id="searchAddress" type="text" class="form-control" placeholder="Search Events near your location">
+                <span class="input-group-button">
+                    <button id="searchEvent" class="btn btn-secondary" type="button"><i class="fa fa-search fa-2x" aria-hidden="true"></i></button>
+                  </span>
+            </div>
+        </div>
+        <div class="input-group input-group-lg col-lg-4">
+            <select id="filterTag" class="form-control">
+                <option value="All">All</option>
+                <option value="Dating">Dating</option>
+                <option value="Sports">Sports</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Study">Study</option>
+            </select>
+            <button type="button" id="filter" class="btn btn-info">
+                Filter
+            </button>
+        </div>
+    </div>
+    <div id="map"></div>
+    <div>
+        <a href="#" class="float" title="Post an Event" data-toggle="modal" data-target="#addEvent"><i class="fa fa-plus btn-float"></i></a>
+    </div>
+    <div class="modal" id="addEvent" tabindex="-1" role="dialog" aria-labelledby="eventLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editInterestLabel">Add Event</h5>
+                    <button type="button" class="close" aria-label="Close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="brief"><b>Title</b></label>
+                            <input type="text" class="form-control" id="brief" placeholder="Enter event breif" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="detail"><b>Detail</b></label>
+                            <input type="text" class="form-control" id="detail" placeholder="Enter event description" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="address"><b>Address</b></label>
+                            <input type="text" class="form-control" id="address" onchange="doGeocode()" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="contact"><b>Contact</b></label>
+                            <input type="text" class="form-control" id="contact" placeholder="e.g. a valid phone number or email" required />
+                        </div>
+                        <div class="form-group">
+                            <select class="custom-select" id="tag">
+                                <option selected>[Choose Tag]</option>
+                                <option value="Study">Study</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Dating">Dating</option>
+                            </select>
+                        </div>
+                        <div id="input_time">
+                            <div class="row">
+                                <div class="col">
+                                    <input type="text" id="start_date" class="date start form-control" placeholder="Start Date" />
+                                </div>
+                                <div class="col">
+                                    <input type="text" id="end_date" class="date end form-control" placeholder="End Date" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <input type="text" id="start_time" class="time start form-control" placeholder="Start Time" />
+                                </div>
+                                <div class="col">
+                                    <input type="text" id="end_time" class="time end form-control" placeholder="End Time" />
+                                </div>
+                            </div>
+                        </div>
+                        {% csrf_token %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="add_button" type="button" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="editEvent" tabindex="-1" role="dialog" aria-labelledby="eventLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editEventLabel">Edit Event</h5>
+                    <button type="button" class="close" aria-label="Close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="brief"><b>Title</b></label>
+                            <input type="text" class="form-control" id="brief2" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="detail"><b>Detail</b></label>
+                            <input type="text" class="form-control" id="detail2" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="address"><b>Address</b></label>
+                            <input type="text" class="form-control" id="address2" onchange="doGeocode()" placeholder = "" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="contact"><b>Contact</b></label>
+                            <input type="text" class="form-control" id="contact2" required />
+                        </div>
+                        <div class="form-group">
+                            <select class="custom-select" id="tag2">
+                                <option selected>[Choose Tag]</option>
+                                <option value="Study">Study</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Dating">Dating</option>
+                            </select>
+                        </div>
+                        <div id="input_time2">
+                            <div class="row">
+                                <div class="col">
+                                    <input type="text" id="start_date2" class="date start form-control" placeholder="Start Date" />
+                                </div>
+                                <div class="col">
+                                    <input type="text" id="end_date2" class="date end form-control" placeholder="End Date" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <input type="text" id="start_time2" class="time start form-control" placeholder="Start Time" />
+                                </div>
+                                <div class="col">
+                                    <input type="text" id="end_time2" class="time end form-control" placeholder="End Time" />
+                                </div>
+                            </div>
+                        </div>
+                        {% csrf_token %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="edit_button" type="button" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script>
+        $('#input_time .time').timepicker({
+            'showDuration': true,
+            'timeFormat': 'g:iA'
+        });
+        $('#input_time .date').datepicker({
+            'format': 'm/d/yyyy',
+            'autoclose': true
+        });
+        var time_pair = document.getElementById('input_time');
+        var datepair = new Datepair(time_pair);
+
+        $('#input_time2 .time').timepicker({
+            'showDuration': true,
+            'timeFormat': 'g:iA'
+        });
+        $('#input_time2 .date').datepicker({
+            'format': 'm/d/yyyy',
+            'autoclose': true
+        });
+        var time_pair2 = document.getElementById('input_time2');
+        var datepair2 = new Datepair(time_pair2);
+    </script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <script src="../static/js/map.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAbjKQTG3KAxa9lEuBHShJ8cA9H7VtCZFQ&libraries=places&callback=initMap" async defer>
+    </script>
+</body>
+
+</html>

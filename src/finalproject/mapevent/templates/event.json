@@ -1,0 +1,11 @@
+{
+    "id":{{event.id}},
+    "brief":"{{event.brief}}",
+    "detail":"{{event.detail}}",
+    "location":"{{event.location}}",
+    "address":"{{event.address}}",
+    "tag":"{{event.tag}}",
+    "contact":"{{event.contact}}",
+    "startTime":"{{ event.start_time|date:"D d M Y" }} {{ event.start_time|time:"H:i" }}",
+    "endTime":"{{ event.end_time|date:"D d M Y" }} {{ event.end_time|time:"H:i" }}"
+}

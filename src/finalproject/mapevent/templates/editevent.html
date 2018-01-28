@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit event form</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="{% static 'css/addevent.css'%}" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://jonthornton.github.io/jquery-timepicker/jquery.timepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://jonthornton.github.io/jquery-timepicker/jquery.timepicker.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.standalone.css" />
+
+    <script src="{% static 'js/datepair.js'%}"></script>
+    <script src="{% static 'js/jquery.datepair.js'%}"></script>
+
+</head>
+<body >
+    <div class="container">
+        <div id="form-main">
+            <div id="form-div">
+                <form method="post" class="montform" id="reused_form" action="{% url 'edit_event' event.id %}" >
+                    <p class="title">
+                        <input name="brief" type="text" required class="feedback-input" id="title" value="{{event.brief}}"/>
+                    </p>
+                    <p class="text">
+                        <input name="detail" class="feedback-input" id="description" value="{{event.detail}}" />
+                    </p>
+                    <p class="tag">
+                        <select id="tag" name="tag">
+                            {% for tag in tags %}
+                            {% if event.tag|stringformat:"s" == tag|stringformat:"s" %}
+                            <option value={{tag}} selected>{{tag}}</option>
+                            {% else %}
+                            <option value={{tag}}>{{tag}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </p>
+                    <p class="address">
+                        <input name="address" type="text" required class="feedback-input" id="address" value="{{event.address}}"/>
+                    </p>
+                    <p class="city">
+                        <input name="city" type="text" required class="feedback-input" id="city" value="{{event.city}}"/>
+                    </p>
+                    <p class="contact">
+                        <input name="contact" type="text" required class="feedback-input" id="contact" value="{{event.contact}}"/>
+                    </p>
+                    <p id="input_time">
+                        <input type="text" name="start_date" class="date start" value="{{start_date}}"/>
+                        <input type="text" name="start_time" class="time start" value="{{start_time}}"/> to
+                        <input type="text" name="end_date" class="date end" value="{{end_date}}"/>
+                        <input type="text" name="end_time" class="time end" value="{{end_time}}"/>
+                    </p>
+                    <div class="submit">
+                        <button type="submit" class="button-blue">EDIT</button>
+                        <div class="ease"></div>
+                    </div>
+                    {% csrf_token %}
+                </form>
+
+                <div id="error_message" style="width:100%; height:100%; display:none; ">
+                    <h4>
+                        Error
+                    </h4>
+                    Sorry there was an error sending your form. 
+                </div>
+                <div id="success_message" style="width:100%; height:100%; display:none; "> <h2>Success! Your Message was Sent Successfully.</h2> </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#input_time .time').timepicker({
+            'showDuration': true,
+            'timeFormat': 'g:iA'
+        });
+
+        $('#input_time .date').datepicker({
+            'format': 'm/d/yyyy',
+            'autoclose': true
+        });
+        var time_pair = document.getElementById('input_time');
+        var datepair = new Datepair(time_pair);
+    </script>
+</body>
+</html>

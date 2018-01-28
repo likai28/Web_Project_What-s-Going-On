@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Add event form</title>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+        <link href="{% static 'css/addevent.css'%}" rel="stylesheet">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://jonthornton.github.io/jquery-timepicker/jquery.timepicker.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://jonthornton.github.io/jquery-timepicker/jquery.timepicker.css" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.standalone.css" />
+
+        <script src="{% static 'js/datepair.js'%}"></script>
+        <script src="{% static 'js/jquery.datepair.js'%}"></script> 
+
+    </head>
+    <body >
+        <div class="container">
+            <div id="form-main">
+                <div id="form-div">
+                {%for error in form.errors%}
+                    <p>{{error}}</p>
+	            {% endfor %}
+                    <form method="post" class="montform" id="reused_form" action="{% url 'addevent' %}" >
+                        <p class="title">
+                            <input name="brief" type="text" class="feedback-input" required placeholder="Event summary" id="title" />
+                        </p>
+                        <p class="text">
+                            <input name="detail" class="feedback-input" id="description" placeholder="Detailed description" />
+                        </p>
+                        <p class="tag">
+                            <select id="tag" name="tag">
+                                <option value="Study">Study</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Dating">Dating</option>
+                            </select>
+                        </p>
+                        <p class="address">
+                            <input name="address" type="text" required class="feedback-input" id="address" placeholder="Event address" />
+                        </p>
+                        <p class="city">
+                            <input name="city" type="text" required class="feedback-input" id="city" placeholder="City" />
+                        </p>
+                        <p class="contact">
+                            <input name="contact" type="text" required class="feedback-input" id="contact" placeholder="Contact" />
+                        </p>
+                        <p id="input_time">
+                            <input type="text" name="start_date" class="date start"/>
+                            <input type="text" name="start_time" class="time start"/> to
+                            <input type="text" name="end_date" class="date end"/>
+                            <input type="text" name="end_time" class="time end"/>
+                        </p>
+                        <div class="submit">
+                            <button type="submit" class="button-blue">SUBMIT</button>
+                            <div class="ease"></div>
+                        </div>
+                        {% csrf_token %}
+                    </form>
+                    
+                    <div id="error_message" style="width:100%; height:100%; display:none; ">
+                        <h4>
+                            Error
+                        </h4>
+                        Sorry there was an error sending your form. 
+                    </div>
+                    <div id="success_message" style="width:100%; height:100%; display:none; "> <h2>Success! Your Message was Sent Successfully.</h2> </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $('#input_time .time').timepicker({
+            'showDuration': true,
+            'timeFormat': 'g:iA'
+            });
+
+            $('#input_time .date').datepicker({
+                'format': 'm/d/yyyy',
+                'autoclose': true
+            });
+            var time_pair = document.getElementById('input_time');
+            var datepair = new Datepair(time_pair);
+        </script>
+    </body>
+</html>

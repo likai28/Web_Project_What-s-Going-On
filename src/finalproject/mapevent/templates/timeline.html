@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <title>Timeline</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/timeline.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base_timeline.css' %}">
+    <!--     <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://jonthornton.github.io/jquery-timepicker/jquery.timepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://jonthornton.github.io/jquery-timepicker/jquery.timepicker.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.standalone.css" />
+    <link rel="stylesheet" href="{% static 'assets/web/assets/mobirise-icons/mobirise-icons.css' %}">
+    <script src="{% static 'js/datepair.js'%}"></script>
+    <script src="{% static 'js/jquery.datepair.js'%}"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div id="searchContainer">
+            <div class="row">
+                <div class="input-group col-lg-4">
+                    <span class="input-group-btn">
+                <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn" onclick="location.href = '{% url 'home' %}'">
+          <i class="fa fa-bars" aria-hidden="true"></i>
+        </button>
+      </span>
+                    <h1 id="timeline" class="col-lg-6">Timeline</h1>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div id="form-main">
+            <div id="form-div">
+                <form method="post" class="montform row" id="reused_form" action="{% url 'filtertime' %}">
+                    <p id="input_time" class="col-lg-9">
+                        <input type="text" name="start_date" class="date start" required placeholder="Start date" />
+                        <input type="text" name="start_time" class="time start" required placeholder="Start time" /> to
+                        <input type="text" name="end_date" class="date end" required placeholder="End date" />
+                        <input type="text" name="end_time" class="time end" required placeholder="End time" />
+                    </p>
+                    <button type="submit" class="btn btn-primary btn-sm col-lg-1">TimeFilter</button>
+                    <button type="button" class="btn btn-primary btn-sm col-lg-1" onclick="location.href = '{% url 'timeline' %}'">AllEvents</button>
+                    {% csrf_token %}
+                </form>
+                <div id="error_message" style="width:100%; height:100%; display:none; ">
+                    <h4>
+                            Error
+                        </h4> Sorry there was an error sending your form.
+                </div>
+                <div id="success_message" style="width:100%; height:100%; display:none; ">
+                    <h2>Success! Your Message was Sent Successfully.</h2> </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <div class="row">
+            <div class="col-lg-6">
+                <h4>Future</h4>
+            </div>
+            <div class="col-lg-6">
+                <h4>Past</h4>
+            </div>
+        </div>
+        <ul class="timeline">
+            {% for event, liked in events %} {% if event.is_finished %}
+            <li class="timeline-inverted">
+                <div class="timeline-badge danger"><i class="glyphicon glyphicon-minus"></i></div>
+                <div class="timeline-panel">
+                    <div class="timeline-heading">
+                        <div class="row">
+                            <h3 class="timeline-title col-lg-9">{{event.brief}}</h3> {% if liked == 0 %}
+                            <i title="Add to Favorites" class="mbri-star col-lg-3" style="cursor:pointer;" onclick="likeEvent(this)" event_id="{{event.id}}"></i> {% else %}
+                            <i title="Remove from Favorites" class="mbri-magic-stick col-lg-3" style="cursor:pointer;" onclick="stopLikeEvent(this)" event_id="{{event.id}}"></i> {% endif %}
+                        </div>
+                        <p>
+                            <div class="text-muted"><i class="glyphicon glyphicon-time"></i> Start time: {{event.start_time}}</div>
+                            <div class="text-muted"><i class="glyphicon glyphicon-time"></i> End time: {{event.end_time}}</div>
+                        </p>
+                    </div>
+                    <div class="timeline-body">
+                        <ul>
+                            <li>Created by: {{event.user}}</li>
+                            <li>Event detail: {{event.detail}}</li>
+                            <li>Event tag: {{event.tag}}</li>
+                            <li>Event address: {{event.address}}</li>
+                        </ul>
+                        {% if event.user == request.user %}
+                        <a href="{% url 'delete_event' event.id %}" class="btn btn-primary">Delete Event</a> {% endif %}
+                    </div>
+                </div>
+            </li>
+            {% else %}
+            <li>
+                <div class="timeline-badge info"><i class="glyphicon glyphicon-pencil"></i></div>
+                <div class="timeline-panel">
+                    <div class="timeline-heading">
+                        <div class="row">
+                            <h3 class="timeline-title col-lg-9">{{event.brief}}</h3> {% if liked == 0 %}
+                            <i title="Add to Favorites" class="mbri-star col-lg-3" style="cursor:pointer;" onclick="likeEvent(this)" event_id="{{event.id}}"></i> {% else %}
+                            <i title="Remove from Favorites" class="mbri-magic-stick col-lg-3" style="cursor:pointer;" onclick="stopLikeEvent(this)" event_id="{{event.id}}"></i> {% endif %}
+                        </div>
+                        <p>
+                            <div class="text-muted"><i class="glyphicon glyphicon-time"></i> Start time: {{event.start_time}}</div>
+                            <div class="text-muted"><i class="glyphicon glyphicon-time"></i> End time: {{event.end_time}}</div>
+                        </p>
+                    </div>
+                    <div class="timeline-body">
+                        <ul>
+                            <li>Created by: {{event.user}}</li>
+                            <li>Event detail: {{event.detail}}</li>
+                            <li>Event tag: {{event.tag}}</li>
+                            <li>Event address: {{event.address}}</li>
+                        </ul>
+                        {% if event.user == request.user %}
+                        <a href="{% url 'delete_event' event.id %}" class="btn btn-primary">Delete Event</a> {% endif %}
+                    </div>
+                </div>
+            </li>
+            {% endif %} {% endfor%}
+        </ul>
+    </div>
+    <script>
+    $('#input_time .time').timepicker({
+        'showDuration': true,
+        'timeFormat': 'g:iA'
+    });
+
+    $('#input_time .date').datepicker({
+        'format': 'm/d/yyyy',
+        'autoclose': true
+    });
+    var time_pair = document.getElementById('input_time');
+    var datepair = new Datepair(time_pair);
+    </script>
+    <script>
+    function likeEvent(e) {
+        var id = e.getAttribute("event_id");
+        $.get("/like/" + id).done(function(data) {
+            e.setAttribute("class", "mbri-magic-stick");
+            e.setAttribute("onclick", "stopLikeEvent(this)");
+            e.setAttribute("title", "Remove from Favorites");
+            alert("Added to Favorites!");
+        });
+    }
+
+    function stopLikeEvent(e) {
+        var id = e.getAttribute("event_id");
+        $.get("/stop_like/" + id).done(function(data) {
+            e.setAttribute("class", "mbri-star");
+            e.setAttribute("onclick", "likeEvent(this)");
+            e.setAttribute("title", "Add to Favorites");
+        });
+    }
+    </script>
+</body>
+
+</html>

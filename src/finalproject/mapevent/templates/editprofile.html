@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Edit Profile</title>
+</head>
+
+<body>
+	<form method="post" action="{%url 'edit-profile' %}">
+		<ul>
+            Interests(pick at least one):
+            <li><label><input type="checkbox" name="tags" value="Study" id="id_tags_0" class="form-control input-lg">Study</label><br></li>
+            <li><label><input type="checkbox" name="tags" value="Sports" id="id_tags_1" />Sports</label></li>
+            <li><label><input type="checkbox" name="tags" value="Entertainment" id="id_tags_2" />Entertainment</label></li>
+            <li><label><input type="checkbox" name="tags" value="Dating" id="id_tags_3" />Dating</label></li>
+        </ul>
+        <input type="submit" value="Save">
+        {% csrf_token %}
+	</form>
+</body>
+</html>
