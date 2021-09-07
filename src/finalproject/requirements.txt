@@ -18,7 +18,7 @@ modulegraph==0.10.4
 olefile==0.44
 pathlib==1.0.1
 pew==1.1.0
-Pillow==4.3.0
+Pillow==8.3.2
 pipenv==8.3.1
 pkginfo==1.4.1
 psycopg2==2.7.3.2
